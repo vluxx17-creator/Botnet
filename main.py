@@ -16,83 +16,83 @@ dp = Dispatcher(storage=MemoryStorage())
 subscribed_users = set()
 
 class SnosState(StatesGroup):
- target = State()
+    target = State()
 
 # --- КЛАВИАТУРЫ ---
 # Кнопка покупки (Inline)
 buy_kb = InlineKeyboardMarkup(inline_keyboard=[
- [InlineKeyboardButton(text="💎 Купить подписку", callback_data="buy_sub")]
+    [InlineKeyboardButton(text="💎 Купить подписку", callback_data="buy_sub")]
 ])
 
 # Главное меню (Reply)
 main_kb = ReplyKeyboardMarkup(keyboard=[
- [KeyboardButton(text="💥 Снос (визуал)")]
+    [KeyboardButton(text="💥 Снос (визуал)")]
 ], resize_keyboard=True)
 
 
 # --- ОБРАБОТЧИКИ ---
 @dp.message(Command("start"))
 async def cmd_start(message: Message, state: FSMContext):
- await state.clear()
- if message.from_user.id in subscribed_users:7572936594
-  await message.answer("<b>Добро пожаловать в панель управления!</b>", parse_mode="HTML", reply_markup=main_kb)
- else:
-  await message.answer(
-   "🛑 <b>Доступ закрыт.</b>\nДля использования функционала необходимо приобрести подписку.", 
-   parse_mode="HTML", 
-   reply_markup=buy_kb
-  )
+    await state.clear()
+    if message.from_user.id in subscribed_users:
+        await message.answer("<b>Добро пожаловать в панель управления!</b>", parse_mode="HTML", reply_markup=main_kb)
+    else:
+        await message.answer(
+            "🛑 <b>Доступ закрыт.</b>\nДля использования функционала необходимо приобрести подписку.", 
+            parse_mode="HTML", 
+            reply_markup=buy_kb
+        )
 
 # Обработка фейковой покупки
 @dp.callback_query(F.data == "buy_sub")
 async def process_buy(call: CallbackQuery):
- subscribed_users.add(call.from_user.id)
- await call.message.edit_text("✅ <b>Оплата прошла успешно!</b>\nПодписка активирована навсегда.", parse_mode="HTML")
- await call.message.answer("Главное меню открыто. Выберите действие внизу экрана ⬇️", reply_markup=main_kb)
- await call.answer()
+    subscribed_users.add(call.from_user.id)
+    await call.message.edit_text("✅ <b>Оплата прошла успешно!</b>\nПодписка активирована навсегда.", parse_mode="HTML")
+    await call.message.answer("Главное меню открыто. Выберите действие внизу экрана ⬇️", reply_markup=main_kb)
+    await call.answer()
 
 # Запрос цели для сноса
 @dp.message(F.text == "💥 Снос (визуал)")
 async def start_snos(message: Message, state: FSMContext):
- if message.from_user.id not in subscribed_users:
-  await message.answer("У вас нет подписки!")
-  return
-  
- await message.answer("🎯 <b>Введите @username или номер телефона цели для сноса:</b>", parse_mode="HTML")
- await state.set_state(SnosState.target)
+    if message.from_user.id not in subscribed_users:
+        await message.answer("У вас нет подписки!")
+        return
+    
+    await message.answer("🎯 <b>Введите @username или номер телефона цели для сноса:</b>", parse_mode="HTML")
+    await state.set_state(SnosState.target)
 
 # Имитация процесса сноса
 @dp.message(SnosState.target)
 async def execute_snos(message: Message, state: FSMContext):
- target = message.text
- await state.clear()
+    target = message.text
+    await state.clear()
 
- # Отправляем первое сообщение, которое потом будем изменять
- msg = await message.answer(f"⏳ Инициализация атаки на <code>{target}</code>...", parse_mode="HTML")
- await asyncio.sleep(1.5)
- 
- await msg.edit_text("🔄 Подключение к серверам ботнета (Proxy: ON)...", parse_mode="HTML")
- await asyncio.sleep(1.5)
- 
- await msg.edit_text("⚡️ Генерация вредоносного трафика...", parse_mode="HTML")
- await asyncio.sleep(1.5)
- 
- await msg.edit_text("🚀 Отправка сессий авторизации на целевой аккаунт...", parse_mode="HTML")
- await asyncio.sleep(2)
- 
- sessions_count = random.randint(1, 100)
- 
- final_text = (
-  f"✅ <b>АТАКА УСПЕШНО ЗАВЕРШЕНА</b>\n\n"
-  f"🎯 Цель: <code>{target}</code>\n"
-  f"💉 <b>{sessions_count}</b> сессий закинуто на аккаунт.\n"
-  f"☠️ Скоро он будет снесен."
- )
- await msg.edit_text(final_text, parse_mode="HTML")
+    # Отправляем первое сообщение, которое потом будем изменять
+    msg = await message.answer(f"⏳ Инициализация атаки на <code>{target}</code>...", parse_mode="HTML")
+    await asyncio.sleep(1.5)
+    
+    await msg.edit_text("🔄 Подключение к серверам ботнета (Proxy: ON)...", parse_mode="HTML")
+    await asyncio.sleep(1.5)
+    
+    await msg.edit_text("⚡️ Генерация вредоносного трафика...", parse_mode="HTML")
+    await asyncio.sleep(1.5)
+    
+    await msg.edit_text("🚀 Отправка сессий авторизации на целевой аккаунт...", parse_mode="HTML")
+    await asyncio.sleep(2)
+    
+    sessions_count = random.randint(1, 100)
+    
+    final_text = (
+        f"✅ <b>АТАКА УСПЕШНО ЗАВЕРШЕНА</b>\n\n"
+        f"🎯 Цель: <code>{target}</code>\n"
+        f"💉 <b>{sessions_count}</b> сессий закинуто на аккаунт.\n"
+        f"☠️ Скоро он будет снесен."
+    )
+    await msg.edit_text(final_text, parse_mode="HTML")
 
 async def main():
- await bot.delete_webhook(drop_pending_updates=True)
- await dp.start_polling(bot)
+    await bot.delete_webhook(drop_pending_updates=True)
+    await dp.start_polling(bot)
 
 if __name__ == "__main__":
- asyncio.run(main())
+    asyncio.run(main())
