@@ -34,7 +34,7 @@ main_kb = ReplyKeyboardMarkup(keyboard=[
 @dp.message(Command("start"))
 async def cmd_start(message: Message, state: FSMContext):
  await state.clear()
- if message.from_user.id in subscribed_users:
+ if message.from_user.id in subscribed_users:7572936594
   await message.answer("<b>Добро пожаловать в панель управления!</b>", parse_mode="HTML", reply_markup=main_kb)
  else:
   await message.answer(
